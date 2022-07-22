@@ -13,21 +13,19 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-
 @ViewModelScoped
 class MainViewModel : ViewModel() {
     private val _viewState = MutableStateFlow<AppState>(AppState.idle())
     val state: StateFlow<AppState> = _viewState
 
     @Inject
-    lateinit var client: HttpClient
+    lateinit var provider: HttpClient
 
     fun fetchUser(name: String) {
         _viewState.value = AppState.loader()
         viewModelScope.launch {
             try {
-                val user =
-                    com.weather.app.data.client.get(name).body<UserModel>()
+                val user = provider.get(name).body<UserModel>()
                 if (user.avatarURL != null && user.avatarURL.isNotBlank())
                     _viewState.value = AppState.success(data = user)
                 else _viewState.value = AppState.failed()
