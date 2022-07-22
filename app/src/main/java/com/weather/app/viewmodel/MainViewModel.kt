@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.weather.app.data.response.UserModel
 import com.weather.app.domain.state.AppState
-import dagger.hilt.android.AndroidEntryPoint
 import dagger.hilt.android.scopes.ViewModelScoped
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -24,11 +23,14 @@ class MainViewModel : ViewModel() {
     lateinit var client: HttpClient
 
     fun fetchUser(name: String) {
+        _viewState.value = AppState.loader()
         viewModelScope.launch {
             try {
                 val user =
                     com.weather.app.data.client.get(name).body<UserModel>()
+                if (user.avatarURL != null && user.avatarURL.isNotBlank())
                     _viewState.value = AppState.success(data = user)
+                else _viewState.value = AppState.failed()
 
             } catch (e: Exception) {
                 _viewState.value = AppState.failed()

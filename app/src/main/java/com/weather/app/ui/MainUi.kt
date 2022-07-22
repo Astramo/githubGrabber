@@ -2,6 +2,8 @@ package com.weather.app.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
@@ -11,6 +13,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.weather.app.data.response.UserModel
@@ -27,7 +30,8 @@ fun MainUi(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.verticalScroll(state = rememberScrollState())
     ) {
         when (appState) {
             is AppState.idle -> {}
@@ -35,9 +39,12 @@ fun MainUi(
                 val user: UserModel = appState.result as UserModel
                 user.avatarURL?.let {
                     Image(
-                        modifier = Modifier.fillMaxWidth().padding(16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
                         painter = rememberAsyncImagePainter(model = it),
-                        contentDescription = null
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit
                     )
                 }
             }
@@ -50,10 +57,16 @@ fun MainUi(
         }
         Spacer(modifier = Modifier.height(20.dp))
 
-        TextField(value = username, onValueChange = onChange, modifier = Modifier.fillMaxWidth().padding(8.dp))
-        Spacer(modifier = Modifier.height(20.dp))
-        Button(onClick = { onClick.invoke(username) }, modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-            Text(text = "getImage",modifier = Modifier.padding(8.dp))
+        TextField(value = username, onValueChange = onChange, modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp), placeholder = { Text(text = "Enter username") })
+        Spacer(modifier = Modifier.height(10.dp))
+        Button(
+            onClick = { onClick.invoke(username) }, modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Text(text = "getImage", modifier = Modifier.padding(8.dp))
         }
     }
 
